@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from picasso_tower.models import Animal, Color, Floor
+from picasso.models import Animal, Color, Floor
 
 
 class PicassoTowerFloor(BaseModel):

@@ -1,0 +1,9 @@
+[flake8]
+exclude =
+    .git,
+    __pycache__,
+    build,
+    venv,
+    *.egg-info
+    .mypy_cache
+max_line_length = 120

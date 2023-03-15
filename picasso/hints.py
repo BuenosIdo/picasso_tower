@@ -10,7 +10,7 @@ class Hint(object):
 
 class SpecificHint(Hint):
     def validate(self, picasso_tower: PicassoTower) -> bool:
-        pass
+        raise NotImplementedError
 
 
 class AbsoluteHint(Hint):
@@ -85,7 +85,7 @@ class FloorFloorRelativeHint(SpecificHint):
         self.difference = difference
 
     def validate(self, picasso_tower: PicassoTower) -> bool:
-        return picasso_tower.floors[self.floor2 + self.difference] == picasso_tower.floors[self.floor1]
+        return picasso_tower.floors[Floor(self.floor2 + self.difference)] == picasso_tower.floors[self.floor1]
 
 
 class ColorColorRelativeHint(SpecificHint):
@@ -209,11 +209,11 @@ class FloorColorNeighborHint(SpecificHint):
 
     def validate(self, picasso_tower: PicassoTower) -> bool:
         if self.floor == Floor.First:
-            return picasso_tower.floors[self.floor + 1].color == self.color
+            return picasso_tower.floors[Floor(self.floor + 1)].color == self.color
         if self.floor == Floor.Fifth:
-            return picasso_tower.floors[self.floor + -1].color == self.color
-        return (picasso_tower.floors[self.floor + 1].color == self.color) or (
-            picasso_tower.floors[self.floor - 1].color == self.color
+            return picasso_tower.floors[Floor(self.floor + -1)].color == self.color
+        return (picasso_tower.floors[Floor(self.floor + 1)].color == self.color) or (
+            picasso_tower.floors[Floor(self.floor - 1)].color == self.color
         )
 
 
@@ -224,11 +224,11 @@ class FloorAnimalNeighborHint(SpecificHint):
 
     def validate(self, picasso_tower: PicassoTower) -> bool:
         if self.floor == Floor.First:
-            return picasso_tower.floors[self.floor + 1].animal == self.animal
+            return picasso_tower.floors[Floor(self.floor + 1)].animal == self.animal
         if self.floor == Floor.Fifth:
-            return picasso_tower.floors[self.floor + -1].animal == self.animal
-        return (picasso_tower.floors[self.floor + 1].animal == self.animal) or (
-            picasso_tower.floors[self.floor - 1].animal == self.animal
+            return picasso_tower.floors[Floor(self.floor + -1)].animal == self.animal
+        return (picasso_tower.floors[Floor(self.floor + 1)].animal == self.animal) or (
+            picasso_tower.floors[Floor(self.floor - 1)].animal == self.animal
         )
 
 
@@ -240,18 +240,18 @@ class ColorColorNeighborHint(SpecificHint):
     def validate(self, picasso_tower: PicassoTower) -> bool:
         if (
             picasso_tower.floors[Floor.First].color == self.color1
-            and picasso_tower.floors[Floor.First + 1].color == self.color2
+            and picasso_tower.floors[Floor(Floor.First + 1)].color == self.color2
         ):
             return True
         if (
             picasso_tower.floors[Floor.Fifth].color == self.color1
-            and picasso_tower.floors[Floor.Fifth - 1].color == self.color2
+            and picasso_tower.floors[Floor(Floor.Fifth - 1)].color == self.color2
         ):
             return True
         for floor_number in range(Floor.Second, Floor.Fifth):
             if picasso_tower.floors[Floor(floor_number)].color == self.color1 and (
-                picasso_tower.floors[Floor(floor_number) - 1].color == self.color2
-                or picasso_tower.floors[Floor(floor_number) + 1].color == self.color2
+                picasso_tower.floors[Floor(floor_number - 1)].color == self.color2
+                or picasso_tower.floors[Floor(floor_number + 1)].color == self.color2
             ):
                 return True
         return False
@@ -265,18 +265,18 @@ class ColorAnimalNeighborHint(SpecificHint):
     def validate(self, picasso_tower: PicassoTower) -> bool:
         if (
             picasso_tower.floors[Floor.First].color == self.color
-            and picasso_tower.floors[Floor.First + 1].animal == self.animal
+            and picasso_tower.floors[Floor(Floor.First + 1)].animal == self.animal
         ):
             return True
         if (
             picasso_tower.floors[Floor.Fifth].color == self.color
-            and picasso_tower.floors[Floor.Fifth - 1].animal == self.animal
+            and picasso_tower.floors[Floor(Floor.Fifth - 1)].animal == self.animal
         ):
             return True
         for floor_number in range(Floor.Second, Floor.Fifth):
             if picasso_tower.floors[Floor(floor_number)].color == self.color and (
-                picasso_tower.floors[Floor(floor_number) - 1].animal == self.animal
-                or picasso_tower.floors[Floor(floor_number) + 1].animal == self.animal
+                picasso_tower.floors[Floor(floor_number - 1)].animal == self.animal
+                or picasso_tower.floors[Floor(floor_number + 1)].animal == self.animal
             ):
                 return True
         return False
@@ -290,18 +290,18 @@ class AnimalAnimalNeighborHint(SpecificHint):
     def validate(self, picasso_tower: PicassoTower) -> bool:
         if (
             picasso_tower.floors[Floor.First].animal == self.animal1
-            and picasso_tower.floors[Floor.First + 1].animal == self.animal2
+            and picasso_tower.floors[Floor(Floor.First + 1)].animal == self.animal2
         ):
             return True
         if (
             picasso_tower.floors[Floor.Fifth].animal == self.animal1
-            and picasso_tower.floors[Floor.Fifth - 1].animal == self.animal2
+            and picasso_tower.floors[Floor(Floor.Fifth - 1)].animal == self.animal2
         ):
             return True
         for floor_number in range(Floor.Second, Floor.Fifth):
             if picasso_tower.floors[Floor(floor_number)].animal == self.animal1 and (
-                picasso_tower.floors[Floor(floor_number) - 1].animal == self.animal2
-                or picasso_tower.floors[Floor(floor_number) + 1].animal == self.animal2
+                picasso_tower.floors[Floor(floor_number - 1)].animal == self.animal2
+                or picasso_tower.floors[Floor(floor_number + 1)].animal == self.animal2
             ):
                 return True
         return False

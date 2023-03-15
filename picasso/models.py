@@ -10,22 +10,22 @@ class Floor(IntEnum):
 
 
 class Color(Enum):
-    Red = 'Red'
-    Green = 'Green'
-    Blue = 'Blue'
-    Yellow = 'Yellow'
-    Orange = 'Orange'
+    Red = "Red"
+    Green = "Green"
+    Blue = "Blue"
+    Yellow = "Yellow"
+    Orange = "Orange"
 
 
 class Animal(Enum):
-    Frog = 'Frog'
-    Rabbit = 'Rabbit'
-    Grasshopper = 'Grasshopper'
-    Bird = 'Bird'
-    Chicken = 'Chicken'
+    Frog = "Frog"
+    Rabbit = "Rabbit"
+    Grasshopper = "Grasshopper"
+    Bird = "Bird"
+    Chicken = "Chicken"
 
 
 class AttributeType(Enum):
-    Floor = 'Floor'
-    Color = 'Color'
-    Animal = 'Animal'
+    Floor = "Floor"
+    Color = "Color"
+    Animal = "Animal"

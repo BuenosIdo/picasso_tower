@@ -48,20 +48,18 @@ HINTS_EX2 = [
     AbsoluteHint(Animal.Frog, Color.Yellow),
     NeighborHint(Animal.Frog, Animal.Grasshopper),
     NeighborHint(Color.Red, Color.Orange),
-    RelativeHint(Animal.Chicken, Color.Blue, -4)
+    RelativeHint(Animal.Chicken, Color.Blue, -4),
 ]
 
-HINTS_EX3 = [
-    RelativeHint(Animal.Rabbit, Color.Green, -2)
-]
+HINTS_EX3 = [RelativeHint(Animal.Rabbit, Color.Green, -2)]
 
 
 def test():
-    assert count_assignments(HINTS_EX1) == 2, 'Failed on example #1'
-    assert count_assignments(HINTS_EX2) == 4, 'Failed on example #2'
-    assert count_assignments(HINTS_EX3) == 1728, 'Failed on example #3'
-    print('Success!')
+    assert count_assignments(HINTS_EX1) == 2, "Failed on example #1"
+    assert count_assignments(HINTS_EX2) == 4, "Failed on example #2"
+    assert count_assignments(HINTS_EX3) == 1728, "Failed on example #3"
+    print("Success!")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test()

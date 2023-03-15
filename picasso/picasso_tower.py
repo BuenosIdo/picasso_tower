@@ -9,5 +9,6 @@ class PicassoTowerFloor(BaseModel):
 
 class PicassoTower:
     def __init__(self, floors_number: int):
-        self.floors: dict[Floor, PicassoTowerFloor] = {Floor(i + 1): PicassoTowerFloor() for i in range(floors_number)}
-
+        self.floors: dict[Floor, PicassoTowerFloor] = {
+            Floor(i + 1): PicassoTowerFloor(animal=None, color=None) for i in range(floors_number)
+        }

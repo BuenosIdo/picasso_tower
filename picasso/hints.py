@@ -23,7 +23,7 @@ class AbsoluteHint(Hint):
         AbsoluteHint(Color.Orange, Animal.Chicken)
     """
 
-    def __init__(self, attr1, attr2):
+    def __init__(self, attr1: Floor | Color | Animal, attr2: Floor | Color | Animal):
         self.attr1 = attr1
         self.attr2 = attr2
 
@@ -71,7 +71,7 @@ class RelativeHint(Hint):
         RelativeHint(Floor.Third, Floor.Fifth, -2)
     """
 
-    def __init__(self, attr1, attr2, difference):
+    def __init__(self, attr1: Floor | Color | Animal, attr2: Floor | Color | Animal, difference: int):
         self.attr1 = attr1
         self.attr2 = attr2
         self.difference = difference
@@ -196,7 +196,7 @@ class NeighborHint(Hint):
         NeighborHint(Color.Yellow, Floor.Third)
     """
 
-    def __init__(self, attr1, attr2):
+    def __init__(self, attr1: Floor | Color | Animal, attr2: Floor | Color | Animal):
         self.attr1 = attr1
         self.attr2 = attr2
 
@@ -237,15 +237,9 @@ class ColorColorNeighborHint(SpecificHint):
         self.color2 = color2
 
     def validate(self, floors: dict[Floor, PicassoTowerFloor]) -> bool:
-        if (
-            floors[Floor.First].color == self.color1
-            and floors[Floor(Floor.First + 1)].color == self.color2
-        ):
+        if floors[Floor.First].color == self.color1 and floors[Floor(Floor.First + 1)].color == self.color2:
             return True
-        if (
-            floors[Floor.Fifth].color == self.color1
-            and floors[Floor(Floor.Fifth - 1)].color == self.color2
-        ):
+        if floors[Floor.Fifth].color == self.color1 and floors[Floor(Floor.Fifth - 1)].color == self.color2:
             return True
         for floor_number in range(Floor.Second, Floor.Fifth):
             if floors[Floor(floor_number)].color == self.color1 and (
@@ -262,15 +256,9 @@ class ColorAnimalNeighborHint(SpecificHint):
         self.animal = animal
 
     def validate(self, floors: dict[Floor, PicassoTowerFloor]) -> bool:
-        if (
-            floors[Floor.First].color == self.color
-            and floors[Floor(Floor.First + 1)].animal == self.animal
-        ):
+        if floors[Floor.First].color == self.color and floors[Floor(Floor.First + 1)].animal == self.animal:
             return True
-        if (
-            floors[Floor.Fifth].color == self.color
-            and floors[Floor(Floor.Fifth - 1)].animal == self.animal
-        ):
+        if floors[Floor.Fifth].color == self.color and floors[Floor(Floor.Fifth - 1)].animal == self.animal:
             return True
         for floor_number in range(Floor.Second, Floor.Fifth):
             if floors[Floor(floor_number)].color == self.color and (
@@ -287,15 +275,9 @@ class AnimalAnimalNeighborHint(SpecificHint):
         self.animal2 = animal2
 
     def validate(self, floors: dict[Floor, PicassoTowerFloor]) -> bool:
-        if (
-            floors[Floor.First].animal == self.animal1
-            and floors[Floor(Floor.First + 1)].animal == self.animal2
-        ):
+        if floors[Floor.First].animal == self.animal1 and floors[Floor(Floor.First + 1)].animal == self.animal2:
             return True
-        if (
-            floors[Floor.Fifth].animal == self.animal1
-            and floors[Floor(Floor.Fifth - 1)].animal == self.animal2
-        ):
+        if floors[Floor.Fifth].animal == self.animal1 and floors[Floor(Floor.Fifth - 1)].animal == self.animal2:
             return True
         for floor_number in range(Floor.Second, Floor.Fifth):
             if floors[Floor(floor_number)].animal == self.animal1 and (

@@ -1,13 +1,16 @@
-from itertools import permutations
+from typing import Generator
+from itertools import permutations, product
 from picasso.models import Floor, Color, Animal, PicassoTowerFloor
 from picasso.hints import Hint, AbsoluteHint, RelativeHint, NeighborHint, get_specific_hints
 
 
-def generate_all_floor_combinations(floors_number: int):
+def generate_all_floor_combinations(floors_number: int) -> Generator[dict[Floor, PicassoTowerFloor], None, None]:
     """
     TODO: Improve this
     """
-    floors: dict[Floor, PicassoTowerFloor] = {Floor(i + 1): PicassoTowerFloor(animal=None, color=None) for i in range(floors_number)}
+    floors: dict[Floor, PicassoTowerFloor] = {
+        Floor(i + 1): PicassoTowerFloor(animal=None, color=None) for i in range(floors_number)
+    }
     for animal_perm in permutations(Animal, floors_number):
         for color_perm in permutations(Color, floors_number):
             for i, floor in enumerate(floors.values()):
@@ -16,29 +19,51 @@ def generate_all_floor_combinations(floors_number: int):
             yield floors
 
 
-def generate_all_floor_combinations_improved(floors: dict[Floor, PicassoTowerFloor], animals: list[Animal], colors: list[Color]):
-    """
-    TODO: Improve this
-    """
-    tower = PicassoTower(floors_number)
-    for animal_perm in permutations(Animal, floors_number):
-        for color_perm in permutations(Color, floors_number):
-            for i, floor in enumerate(tower.floors.values()):
-                floor.animal = animal_perm[i]
-                floor.color = color_perm[i]
-            yield tower
+def generate_all_floor_combinations2(
+    floors: dict[Floor, PicassoTowerFloor],
+    unused_colors: set[Color] | None = None,
+    unused_animals: set[Animal] | None = None,
+) -> Generator[dict[Floor, PicassoTowerFloor], None, None]:
+    if unused_colors is None:
+        unused_colors = set(Color) - {floor.color for floor in floors.values() if floor.color is not None}
+    if unused_animals is None:
+        unused_animals = set(Animal) - {floor.animal for floor in floors.values() if floor.animal is not None}
+
+    if not unused_animals and not unused_colors:
+        yield floors
+        return
+
+    new_floors = floors.copy()
+    for floor_number, floor in new_floors.items():
+        if floor.color is None or floor.animal is None:
+            floor_possible_color = {floor.color} if floor.color is not None else unused_colors
+            floor_possible_animal = {floor.animal} if floor.animal is not None else unused_animals
+            for color, animal in product(floor_possible_color, floor_possible_animal):
+                new_floors[floor_number] = PicassoTowerFloor(color=color, animal=animal)
+
+                new_unused_colors = unused_colors.copy()
+                new_unused_colors.remove(color)
+                new_unused_animals = unused_animals.copy()
+                new_unused_animals.remove(animal)
+
+                yield from generate_all_floor_combinations2(
+                    floors=new_floors, unused_colors=new_unused_colors, unused_animals=new_unused_animals
+                )
 
 
-def count_assignments(hints: list[Hint]):
+def count_assignments(hints: list[Hint]) -> int:
     """
     Given a list of Hint objects, return the number of
     valid assignments that satisfy these hints.
     """
     counter = 0
     specific_hints = get_specific_hints(hints)
-    for tower in generate_all_floor_combinations(5):
+    floors: dict[Floor, PicassoTowerFloor] = {
+        Floor(i + 1): PicassoTowerFloor(animal=None, color=None) for i in range(5)
+    }
+    for floors_combination in generate_all_floor_combinations2(floors=floors):
         for specific_hint in specific_hints:
-            if not specific_hint.validate(tower):
+            if not specific_hint.validate(floors_combination):
                 break
         else:
             counter += 1
@@ -66,10 +91,10 @@ HINTS_EX2 = [
 HINTS_EX3 = [RelativeHint(Animal.Rabbit, Color.Green, -2)]
 
 
-def test():
+def test() -> None:
     assert count_assignments(HINTS_EX1) == 2, "Failed on example #1"
     assert count_assignments(HINTS_EX2) == 4, "Failed on example #2"
-    assert count_assignments(HINTS_EX3) == 1728, "Failed on example #3"
+    assert count_assignments(HINTS_EX3) == 1728, "Failed on example #3"  # type: ignore
     print("Success!")
 
 

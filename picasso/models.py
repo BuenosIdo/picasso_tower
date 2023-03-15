@@ -1,4 +1,5 @@
 from enum import Enum, IntEnum
+from pydantic import BaseModel
 
 
 class Floor(IntEnum):
@@ -29,3 +30,8 @@ class AttributeType(Enum):
     Floor = "Floor"
     Color = "Color"
     Animal = "Animal"
+
+
+class PicassoTowerFloor(BaseModel):
+    animal: Animal | None
+    color: Color | None

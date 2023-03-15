@@ -6,5 +6,5 @@ setup(
     author="Ido Buenos",
     author_email="buenos.work@gmail.com",
     packages=["picasso"],
-    requires=["pydantic"],
+    install_requires=["pydantic==1.10.6"],
 )

@@ -1,10 +1,22 @@
 from itertools import permutations
-from picasso.models import Floor, Color, Animal
+from picasso.models import Floor, Color, Animal, PicassoTowerFloor
 from picasso.hints import Hint, AbsoluteHint, RelativeHint, NeighborHint, get_specific_hints
-from picasso.picasso_tower import PicassoTower
 
 
 def generate_all_floor_combinations(floors_number: int):
+    """
+    TODO: Improve this
+    """
+    floors: dict[Floor, PicassoTowerFloor] = {Floor(i + 1): PicassoTowerFloor(animal=None, color=None) for i in range(floors_number)}
+    for animal_perm in permutations(Animal, floors_number):
+        for color_perm in permutations(Color, floors_number):
+            for i, floor in enumerate(floors.values()):
+                floor.animal = animal_perm[i]
+                floor.color = color_perm[i]
+            yield floors
+
+
+def generate_all_floor_combinations_improved(floors: dict[Floor, PicassoTowerFloor], animals: list[Animal], colors: list[Color]):
     """
     TODO: Improve this
     """

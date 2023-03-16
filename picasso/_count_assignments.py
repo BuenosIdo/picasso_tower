@@ -51,6 +51,34 @@ def generate_all_floor_combinations2(
                 )
 
 
+def generate_all_floor_combinations3(
+    floors: dict[Floor, PicassoTowerFloor]
+) -> Generator[dict[Floor, PicassoTowerFloor], None, None]:
+    unused_colors = list(Color)
+    unused_animals = list(Animal)
+
+    for floor in floors.values():
+        if floor.color in unused_colors:
+            unused_colors.remove(floor.color)
+        if floor.animal in unused_animals:
+            unused_animals.remove(floor.animal)
+
+    for color_perm in permutations(unused_colors):
+        for animal_perm in permutations(unused_animals):
+            color_iter = iter(color_perm)
+            animal_iter = iter(animal_perm)
+            floors_copy = {
+                floor_num: PicassoTowerFloor(animal=floors[floor_num].animal, color=floors[floor_num].color)
+                for floor_num in floors
+            }
+            for floor in floors_copy.values():
+                if floor.color is None:
+                    floor.color = next(color_iter)
+                if floor.animal is None:
+                    floor.animal = next(animal_iter)
+            yield floors_copy
+
+
 def count_assignments(hints: list[Hint]) -> int:
     """
     Given a list of Hint objects, return the number of
@@ -61,7 +89,7 @@ def count_assignments(hints: list[Hint]) -> int:
     floors: dict[Floor, PicassoTowerFloor] = {
         Floor(i + 1): PicassoTowerFloor(animal=None, color=None) for i in range(5)
     }
-    for floors_combination in generate_all_floor_combinations2(floors=floors):
+    for floors_combination in generate_all_floor_combinations3(floors=floors):
         for specific_hint in specific_hints:
             if not specific_hint.validate(floors_combination):
                 break

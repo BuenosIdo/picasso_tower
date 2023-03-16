@@ -126,13 +126,16 @@ HINTS_EX2 = [
     RelativeHint(Animal.Chicken, Color.Blue, -4),
 ]
 
-HINTS_EX3 = [RelativeHint(Animal.Rabbit, Color.Green, -2)]
+HINTS_EX3: list[Hint] = [RelativeHint(Animal.Rabbit, Color.Green, -2)]
+
+HINTS_EX4: list[Hint] = []
 
 
 def test() -> None:
     assert count_assignments(HINTS_EX1) == 2, "Failed on example #1"
     assert count_assignments(HINTS_EX2) == 4, "Failed on example #2"
-    assert count_assignments(HINTS_EX3) == 1728, "Failed on example #3"  # type: ignore
+    assert count_assignments(HINTS_EX3) == 1728, "Failed on example #3"
+    assert count_assignments(HINTS_EX4) == 14400, "Failed on example #4"
     print("Success!")
 
 

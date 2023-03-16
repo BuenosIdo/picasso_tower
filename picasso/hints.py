@@ -11,6 +11,9 @@ class SpecificHint(Hint):
     def validate(self, floors: dict[Floor, PicassoTowerFloor]) -> bool:
         raise NotImplementedError
 
+    def insert(self, floors: dict[Floor, PicassoTowerFloor]) -> None:
+        raise NotImplementedError
+
 
 class AbsoluteHint(Hint):
     """
@@ -36,6 +39,9 @@ class FloorColorAbsoluteHint(SpecificHint):
     def validate(self, floors: dict[Floor, PicassoTowerFloor]) -> bool:
         return floors[self.floor].color == self.color
 
+    def insert(self, floors: dict[Floor, PicassoTowerFloor]) -> None:
+        floors[self.floor].color = self.color
+
 
 class FloorAnimalAbsoluteHint(SpecificHint):
     def __init__(self, floor: Floor, animal: Animal):
@@ -44,6 +50,9 @@ class FloorAnimalAbsoluteHint(SpecificHint):
 
     def validate(self, floors: dict[Floor, PicassoTowerFloor]) -> bool:
         return floors[self.floor].animal == self.animal
+
+    def insert(self, floors: dict[Floor, PicassoTowerFloor]) -> None:
+        floors[self.floor].animal = self.animal
 
 
 class ColorAnimalAbsoluteHint(SpecificHint):
@@ -57,6 +66,13 @@ class ColorAnimalAbsoluteHint(SpecificHint):
                 return True
         return False
 
+    def insert(self, floors: dict[Floor, PicassoTowerFloor]) -> None:
+        for floor in floors.values():
+            if floor.color == self.color:
+                floor.animal = self.animal
+            elif floor.animal == self.animal:
+                floor.color = self.color
+
 
 class RelativeHint(Hint):
     """
@@ -64,7 +80,7 @@ class RelativeHint(Hint):
     that are of a certain distance of each other.
     Examples:
     The red floor is above the blue floor:
-        RelativeHint(Color.Red, Color.Red, 1)
+        RelativeHint(Color.Red, Color.Blue, 1)
     The frog lives three floor below the yellow floor:
         RelativeHint(Animal.Frog, Color.Yellow, -3)
     The third floor is two floors below the fifth floor:
@@ -77,16 +93,6 @@ class RelativeHint(Hint):
         self.difference = difference
 
 
-class FloorFloorRelativeHint(SpecificHint):
-    def __init__(self, floor1: Floor, floor2: Floor, difference: int):
-        self.floor1 = floor1
-        self.floor2 = floor2
-        self.difference = difference
-
-    def validate(self, floors: dict[Floor, PicassoTowerFloor]) -> bool:
-        return floors[Floor(self.floor2 + self.difference)] == floors[self.floor1]
-
-
 class ColorColorRelativeHint(SpecificHint):
     def __init__(self, color1: Color, color2: Color, difference: int):
         self.color1 = color1
@@ -94,21 +100,20 @@ class ColorColorRelativeHint(SpecificHint):
         self.difference = difference
 
     def validate(self, floors: dict[Floor, PicassoTowerFloor]) -> bool:
-        if self.difference < 0:
-            for floor_number in range(1, len(floors) - abs(self.difference) + 1):
-                if (
-                    floors[Floor(floor_number)].color == self.color1
-                    and floors[Floor(floor_number + abs(self.difference))].color == self.color2
-                ):
-                    return True
-        else:
-            for floor_number in range(1, len(floors) - abs(self.difference) + 1):
-                if (
-                    floors[Floor(floor_number)].color == self.color2
-                    and floors[Floor(floor_number + abs(self.difference))].color == self.color1
-                ):
-                    return True
+        for floor_number in range(max(0, self.difference) + 1, min(len(floors) + self.difference, len(floors)) + 1):
+            if (
+                floors[Floor(floor_number)].color == self.color1
+                and floors[Floor(floor_number - self.difference)].color == self.color2
+            ):
+                return True
         return False
+
+    def insert(self, floors: dict[Floor, PicassoTowerFloor]) -> None:
+        for floor_number in range(max(0, self.difference) + 1, min(len(floors) + self.difference, len(floors)) + 1):
+            if floors[Floor(floor_number)].color == self.color1:
+                floors[Floor(floor_number - self.difference)].color = self.color2
+            elif floors[Floor(floor_number - self.difference)].color == self.color2:
+                floors[Floor(floor_number)].color = self.color1
 
 
 class ColorAnimalRelativeHint(SpecificHint):
@@ -118,21 +123,20 @@ class ColorAnimalRelativeHint(SpecificHint):
         self.difference = difference
 
     def validate(self, floors: dict[Floor, PicassoTowerFloor]) -> bool:
-        if self.difference < 0:
-            for floor_number in range(1, len(floors) - abs(self.difference) + 1):
-                if (
-                    floors[Floor(floor_number)].color == self.color
-                    and floors[Floor(floor_number + abs(self.difference))].animal == self.animal
-                ):
-                    return True
-        else:
-            for floor_number in range(1, len(floors) - abs(self.difference) + 1):
-                if (
-                    floors[Floor(floor_number)].animal == self.animal
-                    and floors[Floor(floor_number + abs(self.difference))].color == self.color
-                ):
-                    return True
+        for floor_number in range(max(0, self.difference) + 1, min(len(floors) + self.difference, len(floors)) + 1):
+            if (
+                floors[Floor(floor_number)].color == self.color
+                and floors[Floor(floor_number - self.difference)].animal == self.animal
+            ):
+                return True
         return False
+
+    def insert(self, floors: dict[Floor, PicassoTowerFloor]) -> None:
+        for floor_number in range(max(0, self.difference) + 1, min(len(floors) + self.difference, len(floors)) + 1):
+            if floors[Floor(floor_number)].color == self.color:
+                floors[Floor(floor_number - self.difference)].animal = self.animal
+            elif floors[Floor(floor_number - self.difference)].animal == self.animal:
+                floors[Floor(floor_number)].color = self.color
 
 
 class AnimalAnimalRelativeHint(SpecificHint):
@@ -142,21 +146,20 @@ class AnimalAnimalRelativeHint(SpecificHint):
         self.difference = difference
 
     def validate(self, floors: dict[Floor, PicassoTowerFloor]) -> bool:
-        if self.difference < 0:
-            for floor_number in range(1, len(floors) - abs(self.difference) + 1):
-                if (
-                    floors[Floor(floor_number)].animal == self.animal1
-                    and floors[Floor(floor_number + abs(self.difference))].animal == self.animal2
-                ):
-                    return True
-        else:
-            for floor_number in range(1, len(floors) - abs(self.difference) + 1):
-                if (
-                    floors[Floor(floor_number)].animal == self.animal2
-                    and floors[Floor(floor_number + abs(self.difference))].color == self.animal1
-                ):
-                    return True
+        for floor_number in range(max(0, self.difference) + 1, min(len(floors) + self.difference, len(floors)) + 1):
+            if (
+                floors[Floor(floor_number)].animal == self.animal1
+                and floors[Floor(floor_number - self.difference)].animal == self.animal2
+            ):
+                return True
         return False
+
+    def insert(self, floors: dict[Floor, PicassoTowerFloor]) -> None:
+        for floor_number in range(max(0, self.difference) + 1, min(len(floors) + self.difference, len(floors)) + 1):
+            if floors[Floor(floor_number)].animal == self.animal1:
+                floors[Floor(floor_number - self.difference)].animal = self.animal2
+            elif floors[Floor(floor_number - self.difference)].animal == self.animal2:
+                floors[Floor(floor_number)].animal = self.animal1
 
 
 class AnimalColorRelativeHint(SpecificHint):
@@ -166,21 +169,20 @@ class AnimalColorRelativeHint(SpecificHint):
         self.difference = difference
 
     def validate(self, floors: dict[Floor, PicassoTowerFloor]) -> bool:
-        if self.difference < 0:
-            for floor_number in range(1, len(floors) - abs(self.difference) + 1):
-                if (
-                    floors[Floor(floor_number)].animal == self.animal
-                    and floors[Floor(floor_number + abs(self.difference))].color == self.color
-                ):
-                    return True
-        else:
-            for floor_number in range(1, len(floors) - abs(self.difference) + 1):
-                if (
-                    floors[Floor(floor_number)].color == self.color
-                    and floors[Floor(floor_number + abs(self.difference))].animal == self.animal
-                ):
-                    return True
+        for floor_number in range(max(0, self.difference) + 1, min(len(floors) + self.difference, len(floors)) + 1):
+            if (
+                floors[Floor(floor_number)].animal == self.animal
+                and floors[Floor(floor_number - self.difference)].color == self.color
+            ):
+                return True
         return False
+
+    def insert(self, floors: dict[Floor, PicassoTowerFloor]) -> None:
+        for floor_number in range(max(0, self.difference) + 1, min(len(floors) + self.difference, len(floors)) + 1):
+            if floors[Floor(floor_number)].animal == self.animal:
+                floors[Floor(floor_number - self.difference)].color = self.color
+            elif floors[Floor(floor_number - self.difference)].color == self.color:
+                floors[Floor(floor_number)].animal = self.animal
 
 
 class NeighborHint(Hint):
@@ -208,12 +210,22 @@ class FloorColorNeighborHint(SpecificHint):
 
     def validate(self, floors: dict[Floor, PicassoTowerFloor]) -> bool:
         if self.floor == Floor.First:
-            return floors[Floor(self.floor + 1)].color == self.color
+            return floors[Floor.Second].color == self.color
         if self.floor == Floor.Fifth:
-            return floors[Floor(self.floor + -1)].color == self.color
+            return floors[Floor.Fourth].color == self.color
         return (floors[Floor(self.floor + 1)].color == self.color) or (
             floors[Floor(self.floor - 1)].color == self.color
         )
+
+    def insert(self, floors: dict[Floor, PicassoTowerFloor]) -> None:
+        if self.floor == Floor.First:
+            floors[Floor.Second].color = self.color
+        elif self.floor == Floor.Fifth:
+            floors[Floor.Fourth].color = self.color
+        elif floors[Floor(self.floor + 1)].color is None:
+            floors[Floor(self.floor - 1)].color = self.color
+        elif floors[Floor(self.floor - 1)].color is None:
+            floors[Floor(self.floor + 1)].color = self.color
 
 
 class FloorAnimalNeighborHint(SpecificHint):
@@ -223,12 +235,22 @@ class FloorAnimalNeighborHint(SpecificHint):
 
     def validate(self, floors: dict[Floor, PicassoTowerFloor]) -> bool:
         if self.floor == Floor.First:
-            return floors[Floor(self.floor + 1)].animal == self.animal
+            return floors[Floor.Second].animal == self.animal
         if self.floor == Floor.Fifth:
-            return floors[Floor(self.floor + -1)].animal == self.animal
+            return floors[Floor.Fourth].animal == self.animal
         return (floors[Floor(self.floor + 1)].animal == self.animal) or (
             floors[Floor(self.floor - 1)].animal == self.animal
         )
+
+    def insert(self, floors: dict[Floor, PicassoTowerFloor]) -> None:
+        if self.floor == Floor.First:
+            floors[Floor.Second].animal = self.animal
+        elif self.floor == Floor.Fifth:
+            floors[Floor.Fourth].animal = self.animal
+        elif floors[Floor(self.floor + 1)].animal is None:
+            floors[Floor(self.floor - 1)].animal = self.animal
+        elif floors[Floor(self.floor - 1)].animal is None:
+            floors[Floor(self.floor + 1)].animal = self.animal
 
 
 class ColorColorNeighborHint(SpecificHint):
@@ -249,6 +271,20 @@ class ColorColorNeighborHint(SpecificHint):
                 return True
         return False
 
+    def insert(self, floors: dict[Floor, PicassoTowerFloor]) -> None:
+        if floors[Floor.First].color in [self.color1, self.color2]:
+            floors[Floor.Second].color = self.color1 if floors[Floor.First].color == self.color2 else self.color2
+        elif floors[Floor.Fifth].color in [self.color1, self.color2]:
+            floors[Floor.Fourth].color = self.color1 if floors[Floor.Fifth].color == self.color2 else self.color2
+        else:
+            for floor_number in range(Floor.Second, Floor.Fifth):
+                if floors[Floor(floor_number)].color in [self.color1, self.color2]:
+                    color_to_insert = self.color1 if floors[Floor(floor_number)].color == self.color2 else self.color2
+                    if floors[Floor(floor_number + 1)].color is None:
+                        floors[Floor(floor_number - 1)].color = color_to_insert
+                    elif floors[Floor(floor_number - 1)].color is None:
+                        floors[Floor(floor_number + 1)].color = color_to_insert
+
 
 class ColorAnimalNeighborHint(SpecificHint):
     def __init__(self, color: Color, animal: Animal):
@@ -268,6 +304,30 @@ class ColorAnimalNeighborHint(SpecificHint):
                 return True
         return False
 
+    def insert(self, floors: dict[Floor, PicassoTowerFloor]) -> None:
+        if floors[Floor.First].color == self.color:
+            floors[Floor.Second].animal = self.animal
+        elif floors[Floor.First].animal == self.animal:
+            floors[Floor.Second].color = self.color
+
+        elif floors[Floor.Fifth].color == self.color:
+            floors[Floor.Fourth].animal = self.animal
+        elif floors[Floor.Fifth].animal == self.animal:
+            floors[Floor.Fourth].color = self.color
+
+        else:
+            for floor_number in range(Floor.Second, Floor.Fifth):
+                if floors[Floor(floor_number)].color == self.color:
+                    if floors[Floor(floor_number + 1)].animal is None:
+                        floors[Floor(floor_number - 1)].animal = self.animal
+                    elif floors[Floor(floor_number - 1)].animal is None:
+                        floors[Floor(floor_number + 1)].animal = self.animal
+                elif floors[Floor(floor_number)].animal == self.animal:
+                    if floors[Floor(floor_number + 1)].color is None:
+                        floors[Floor(floor_number - 1)].color = self.color
+                    elif floors[Floor(floor_number - 1)].color is None:
+                        floors[Floor(floor_number + 1)].color = self.color
+
 
 class AnimalAnimalNeighborHint(SpecificHint):
     def __init__(self, animal1: Animal, animal2: Animal):
@@ -286,6 +346,22 @@ class AnimalAnimalNeighborHint(SpecificHint):
             ):
                 return True
         return False
+
+    def insert(self, floors: dict[Floor, PicassoTowerFloor]) -> None:
+        if floors[Floor.First].animal in [self.animal1, self.animal2]:
+            floors[Floor.Second].animal = self.animal1 if floors[Floor.First].animal == self.animal2 else self.animal2
+        elif floors[Floor.Fifth].animal in [self.animal1, self.animal2]:
+            floors[Floor.Fourth].animal = self.animal1 if floors[Floor.Fifth].animal == self.animal2 else self.animal2
+        else:
+            for floor_number in range(Floor.Second, Floor.Fifth):
+                if floors[Floor(floor_number)].animal in [self.animal1, self.animal2]:
+                    animal_to_insert = (
+                        self.animal1 if floors[Floor(floor_number)].animal == self.animal2 else self.animal2
+                    )
+                    if floors[Floor(floor_number + 1)].animal is None:
+                        floors[Floor(floor_number - 1)].animal = animal_to_insert
+                    elif floors[Floor(floor_number - 1)].animal is None:
+                        floors[Floor(floor_number + 1)].animal = animal_to_insert
 
 
 def get_specific_absolute_hint(hint: AbsoluteHint) -> SpecificHint:
@@ -311,11 +387,7 @@ def get_specific_absolute_hint(hint: AbsoluteHint) -> SpecificHint:
 
 
 def get_specific_relative_hint(hint: RelativeHint) -> SpecificHint:
-    if isinstance(hint.attr1, Floor):
-        if isinstance(hint.attr2, Floor):
-            return FloorFloorRelativeHint(hint.attr1, hint.attr2, hint.difference)
-
-    elif isinstance(hint.attr1, Color):
+    if isinstance(hint.attr1, Color):
         if isinstance(hint.attr2, Color):
             return ColorColorRelativeHint(hint.attr1, hint.attr2, hint.difference)
         if isinstance(hint.attr2, Animal):

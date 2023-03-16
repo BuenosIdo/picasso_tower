@@ -1,7 +1,7 @@
 from typing import Generator
 from itertools import permutations, product
 from picasso.models import Floor, Color, Animal, PicassoTowerFloor
-from picasso.hints import Hint, AbsoluteHint, RelativeHint, NeighborHint, get_specific_hints
+from picasso.hints import Hint, AbsoluteHint, RelativeHint, NeighborHint, get_specific_hints, SpecificHint
 
 
 def generate_all_floor_combinations(floors_number: int) -> Generator[dict[Floor, PicassoTowerFloor], None, None]:
@@ -79,6 +79,11 @@ def generate_all_floor_combinations3(
             yield floors_copy
 
 
+def insert_hints(floors: dict[Floor, PicassoTowerFloor], hints: list[SpecificHint]) -> None:
+    for hint in hints:
+        hint.insert(floors)
+
+
 def count_assignments(hints: list[Hint]) -> int:
     """
     Given a list of Hint objects, return the number of
@@ -89,6 +94,7 @@ def count_assignments(hints: list[Hint]) -> int:
     floors: dict[Floor, PicassoTowerFloor] = {
         Floor(i + 1): PicassoTowerFloor(animal=None, color=None) for i in range(5)
     }
+    insert_hints(floors, specific_hints)
     for floors_combination in generate_all_floor_combinations3(floors=floors):
         for specific_hint in specific_hints:
             if not specific_hint.validate(floors_combination):

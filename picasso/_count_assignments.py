@@ -83,6 +83,10 @@ def insert_hints(floors: dict[Floor, PicassoTowerFloor], hints: list[SpecificHin
     for hint in hints:
         hint.insert(floors)
 
+    # TODO Add completion of the last color/animal if all others inserted
+    # TODO Add completion of last available color-animal absolute hint
+    # TODO Add completion of last available relative hint
+
 
 def count_assignments(hints: list[Hint]) -> int:
     """

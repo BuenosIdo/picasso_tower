@@ -58,6 +58,13 @@ TEST_FULL_COLOR_HINTS = [
     AbsoluteHint(Color.Blue, Floor.Fifth),
 ]
 
+TEST_ALL_ABSOLUTE_HINT_KINDS = [
+    AbsoluteHint(Color.Red, Floor.First),
+    AbsoluteHint(Animal.Bird, Floor.Second),
+    AbsoluteHint(Color.Red, Animal.Grasshopper),
+    AbsoluteHint(Animal.Bird, Color.Orange),
+]
+
 TEST_ALL_RELATIVE_HINT_KINDS = [
     AbsoluteHint(Color.Orange, Floor.First),
     RelativeHint(Color.Orange, Color.Blue, -1),
@@ -90,6 +97,7 @@ TEST_ALL_NEIGHBOR_HINT_KINDS = [
         (TEST_FULL_TOWER_RESULT_IN_ONE_POSSIBLE_ASSIGNMENT, 1),
         (TEST_FULL_ANIMAL_HINTS, 120),
         (TEST_FULL_COLOR_HINTS, 120),
+        (TEST_ALL_ABSOLUTE_HINT_KINDS, 36),
         (TEST_ALL_RELATIVE_HINT_KINDS, 12),
         (TEST_ALL_NEIGHBOR_HINT_KINDS, 2),
     ],

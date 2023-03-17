@@ -58,9 +58,7 @@ def count_assignments(hints: list[Hint]) -> int:
     """
     counter = 0
     specific_hints = get_specific_hints(hints)
-    tower: dict[Floor, PicassoTowerFloor] = {
-        Floor(i + 1): PicassoTowerFloor(animal=None, color=None) for i in range(5)
-    }
+    tower: dict[Floor, PicassoTowerFloor] = {Floor(i + 1): PicassoTowerFloor(animal=None, color=None) for i in range(5)}
     insert_hints(tower, specific_hints)
     for floors_combination in generate_all_floor_combinations(tower=tower):
         for specific_hint in specific_hints:

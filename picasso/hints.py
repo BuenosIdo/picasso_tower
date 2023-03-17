@@ -48,6 +48,7 @@ class FloorColorAbsoluteHint(SpecificHint):
     For example:
     The third floor is red - FloorColorAbsoluteHint(Floor.Third, Color.Red)
     """
+
     def __init__(self, floor: Floor, color: Color):
         self.floor = floor
         self.color = color
@@ -65,6 +66,7 @@ class FloorAnimalAbsoluteHint(SpecificHint):
     For example:
     The frog lives on the fifth floor - FloorAnimalAbsoluteHint(Animal.Frog, Floor.Fifth)
     """
+
     def __init__(self, floor: Floor, animal: Animal):
         self.floor = floor
         self.animal = animal
@@ -82,6 +84,7 @@ class ColorAnimalAbsoluteHint(SpecificHint):
     For example:
     The orange floor is the floor where the chicken lives - ColorAnimalAbsoluteHint(Color.Orange, Animal.Chicken)
     """
+
     def __init__(self, color: Color, animal: Animal):
         self.color = color
         self.animal = animal
@@ -126,6 +129,7 @@ class ColorColorRelativeHint(SpecificHint):
     For example:
     The red floor is above the blue floor - ColorColorRelativeHint(Color.Red, Color.Blue, 1)
     """
+
     def __init__(self, color1: Color, color2: Color, difference: int):
         self.color1 = color1
         self.color2 = color2
@@ -154,6 +158,7 @@ class ColorAnimalRelativeHint(SpecificHint):
     For example:
     The yellow floor is three below the floor the frog lives in - ColorAnimalRelativeHint(Color.Yellow, Animal.Frog, -3)
     """
+
     def __init__(self, color: Color, animal: Animal, difference: int):
         self.color = color
         self.animal = animal
@@ -182,6 +187,7 @@ class AnimalAnimalRelativeHint(SpecificHint):
     For example:
     The frog lives two floors above the rabbit - AnimalAnimalRelativeHint(Color.Frog, Color.Rabbit, 2)
     """
+
     def __init__(self, animal1: Animal, animal2: Animal, difference: int):
         self.animal1 = animal1
         self.animal2 = animal2
@@ -210,6 +216,7 @@ class AnimalColorRelativeHint(SpecificHint):
     For example:
     The frog lives three floor below the yellow floor - AnimalColorRelativeHint(Animal.Frog, Color.Yellow, -3)
     """
+
     def __init__(self, animal: Animal, color: Color, difference: int):
         self.animal = animal
         self.color = color
@@ -251,6 +258,12 @@ class NeighborHint(Hint):
 
 
 class FloorColorNeighborHint(SpecificHint):
+    """
+    Neighbor hint of a color neighbor to a specific floor
+    For example:
+    The yellow floor is neighboring the third floor - FloorColorNeighborHint(Color.Yellow, Floor.Third)
+    """
+
     def __init__(self, floor: Floor, color: Color):
         self.floor = floor
         self.color = color
@@ -260,22 +273,26 @@ class FloorColorNeighborHint(SpecificHint):
             return tower[Floor.Second].color == self.color
         if self.floor == Floor.Fifth:
             return tower[Floor.Fourth].color == self.color
-        return (tower[Floor(self.floor + 1)].color == self.color) or (
-                tower[Floor(self.floor - 1)].color == self.color
-        )
+        return (tower[Floor(self.floor + 1)].color == self.color) or (tower[Floor(self.floor - 1)].color == self.color)
 
     def insert(self, tower: dict[Floor, PicassoTowerFloor]) -> None:
         if self.floor == Floor.First:
             tower[Floor.Second].color = self.color
         elif self.floor == Floor.Fifth:
             tower[Floor.Fourth].color = self.color
-        elif tower[Floor(self.floor + 1)].color is None:
+        elif tower[Floor(self.floor + 1)].color not in [self.color, None]:
             tower[Floor(self.floor - 1)].color = self.color
-        elif tower[Floor(self.floor - 1)].color is None:
+        elif tower[Floor(self.floor - 1)].color not in [self.color, None]:
             tower[Floor(self.floor + 1)].color = self.color
 
 
 class FloorAnimalNeighborHint(SpecificHint):
+    """
+    Neighbor hint of an animal neighbor to a specific floor
+    For example:
+    The Rabbit is neighbor to the First floor - FloorAnimalNeighborHint(Color.Rabbit, Floor.First)
+    """
+
     def __init__(self, floor: Floor, animal: Animal):
         self.floor = floor
         self.animal = animal
@@ -286,7 +303,7 @@ class FloorAnimalNeighborHint(SpecificHint):
         if self.floor == Floor.Fifth:
             return tower[Floor.Fourth].animal == self.animal
         return (tower[Floor(self.floor + 1)].animal == self.animal) or (
-                tower[Floor(self.floor - 1)].animal == self.animal
+            tower[Floor(self.floor - 1)].animal == self.animal
         )
 
     def insert(self, tower: dict[Floor, PicassoTowerFloor]) -> None:
@@ -294,13 +311,19 @@ class FloorAnimalNeighborHint(SpecificHint):
             tower[Floor.Second].animal = self.animal
         elif self.floor == Floor.Fifth:
             tower[Floor.Fourth].animal = self.animal
-        elif tower[Floor(self.floor + 1)].animal is None:
+        elif tower[Floor(self.floor + 1)].animal not in [self.animal, None]:
             tower[Floor(self.floor - 1)].animal = self.animal
-        elif tower[Floor(self.floor - 1)].animal is None:
+        elif tower[Floor(self.floor - 1)].animal not in [self.animal, None]:
             tower[Floor(self.floor + 1)].animal = self.animal
 
 
 class ColorColorNeighborHint(SpecificHint):
+    """
+    Neighbor hint of a color neighbor to another color
+    For example:
+    The Red floor is neighbor to the Green floor - ColorColorNeighborHint(Color.Red, Floor.Green)
+    """
+
     def __init__(self, color1: Color, color2: Color):
         self.color1 = color1
         self.color2 = color2
@@ -312,8 +335,8 @@ class ColorColorNeighborHint(SpecificHint):
             return True
         for floor_number in range(Floor.Second, Floor.Fifth):
             if tower[Floor(floor_number)].color == self.color1 and (
-                    tower[Floor(floor_number - 1)].color == self.color2
-                    or tower[Floor(floor_number + 1)].color == self.color2
+                tower[Floor(floor_number - 1)].color == self.color2
+                or tower[Floor(floor_number + 1)].color == self.color2
             ):
                 return True
         return False
@@ -327,13 +350,20 @@ class ColorColorNeighborHint(SpecificHint):
             for floor_number in range(Floor.Second, Floor.Fifth):
                 if tower[Floor(floor_number)].color in [self.color1, self.color2]:
                     color_to_insert = self.color1 if tower[Floor(floor_number)].color == self.color2 else self.color2
-                    if tower[Floor(floor_number + 1)].color is None:
+                    if tower[Floor(floor_number + 1)].color not in [color_to_insert, None]:
                         tower[Floor(floor_number - 1)].color = color_to_insert
-                    elif tower[Floor(floor_number - 1)].color is None:
+                    elif tower[Floor(floor_number - 1)].color not in [color_to_insert, None]:
                         tower[Floor(floor_number + 1)].color = color_to_insert
 
 
 class ColorAnimalNeighborHint(SpecificHint):
+    """
+    Neighbor hint of a color neighbor to an animal
+    For example:
+    The green floor is neighboring the floor where the chicken lives -
+    ColorAnimalNeighborHint(Color.Green, Animal.Chicken)
+    """
+
     def __init__(self, color: Color, animal: Animal):
         self.color = color
         self.animal = animal
@@ -345,8 +375,8 @@ class ColorAnimalNeighborHint(SpecificHint):
             return True
         for floor_number in range(Floor.Second, Floor.Fifth):
             if tower[Floor(floor_number)].color == self.color and (
-                    tower[Floor(floor_number - 1)].animal == self.animal
-                    or tower[Floor(floor_number + 1)].animal == self.animal
+                tower[Floor(floor_number - 1)].animal == self.animal
+                or tower[Floor(floor_number + 1)].animal == self.animal
             ):
                 return True
         return False
@@ -365,18 +395,24 @@ class ColorAnimalNeighborHint(SpecificHint):
         else:
             for floor_number in range(Floor.Second, Floor.Fifth):
                 if tower[Floor(floor_number)].color == self.color:
-                    if tower[Floor(floor_number + 1)].animal is None:
+                    if tower[Floor(floor_number + 1)].animal not in [self.animal, None]:
                         tower[Floor(floor_number - 1)].animal = self.animal
-                    elif tower[Floor(floor_number - 1)].animal is None:
+                    elif tower[Floor(floor_number - 1)].animal not in [self.animal, None]:
                         tower[Floor(floor_number + 1)].animal = self.animal
                 elif tower[Floor(floor_number)].animal == self.animal:
-                    if tower[Floor(floor_number + 1)].color is None:
+                    if tower[Floor(floor_number + 1)].color not in [self.color, None]:
                         tower[Floor(floor_number - 1)].color = self.color
-                    elif tower[Floor(floor_number - 1)].color is None:
+                    elif tower[Floor(floor_number - 1)].color not in [self.color, None]:
                         tower[Floor(floor_number + 1)].color = self.color
 
 
 class AnimalAnimalNeighborHint(SpecificHint):
+    """
+    Neighbor hint of an animal neighbor to another animal
+    For example:
+    he grasshopper is a neighbor of the rabbit - AnimalAnimalNeighborHint(Animal.Grasshopper, Animal.Rabbit)
+    """
+
     def __init__(self, animal1: Animal, animal2: Animal):
         self.animal1 = animal1
         self.animal2 = animal2
@@ -388,8 +424,8 @@ class AnimalAnimalNeighborHint(SpecificHint):
             return True
         for floor_number in range(Floor.Second, Floor.Fifth):
             if tower[Floor(floor_number)].animal == self.animal1 and (
-                    tower[Floor(floor_number - 1)].animal == self.animal2
-                    or tower[Floor(floor_number + 1)].animal == self.animal2
+                tower[Floor(floor_number - 1)].animal == self.animal2
+                or tower[Floor(floor_number + 1)].animal == self.animal2
             ):
                 return True
         return False
@@ -405,13 +441,16 @@ class AnimalAnimalNeighborHint(SpecificHint):
                     animal_to_insert = (
                         self.animal1 if tower[Floor(floor_number)].animal == self.animal2 else self.animal2
                     )
-                    if tower[Floor(floor_number + 1)].animal is None:
+                    if tower[Floor(floor_number + 1)].animal not in [animal_to_insert, None]:
                         tower[Floor(floor_number - 1)].animal = animal_to_insert
-                    elif tower[Floor(floor_number - 1)].animal is None:
+                    elif tower[Floor(floor_number - 1)].animal not in [animal_to_insert, None]:
                         tower[Floor(floor_number + 1)].animal = animal_to_insert
 
 
 def get_specific_absolute_hint(hint: AbsoluteHint) -> SpecificHint:
+    """
+    Get an AbsoluteHint and return subclass of SpecificHint with the correct parameters type.
+    """
     if isinstance(hint.attr1, Floor):
         if isinstance(hint.attr2, Color):
             return FloorColorAbsoluteHint(hint.attr1, hint.attr2)
@@ -434,6 +473,9 @@ def get_specific_absolute_hint(hint: AbsoluteHint) -> SpecificHint:
 
 
 def get_specific_relative_hint(hint: RelativeHint) -> SpecificHint:
+    """
+    Get an RelativeHint and return subclass of SpecificHint with the correct parameters type.
+    """
     if isinstance(hint.attr1, Color):
         if isinstance(hint.attr2, Color):
             return ColorColorRelativeHint(hint.attr1, hint.attr2, hint.difference)
@@ -450,6 +492,9 @@ def get_specific_relative_hint(hint: RelativeHint) -> SpecificHint:
 
 
 def get_specific_neighbor_hint(hint: NeighborHint) -> SpecificHint:
+    """
+    Get an NeighborHint and return subclass of SpecificHint with the correct parameters type.
+    """
     if isinstance(hint.attr1, Floor):
         if isinstance(hint.attr2, Color):
             return FloorColorNeighborHint(hint.attr1, hint.attr2)
@@ -476,6 +521,9 @@ def get_specific_neighbor_hint(hint: NeighborHint) -> SpecificHint:
 
 
 def get_specific_hints(hints: list[Hint]) -> list[SpecificHint]:
+    """
+    Get a list of Hint and transfer them to the corresponding SpecificHint according to the members type
+    """
     specific_hints: list[SpecificHint] = []
     for hint in hints:
         if isinstance(hint, AbsoluteHint):

@@ -2,6 +2,7 @@ from itertools import permutations, product
 from typing import Generator
 
 from picasso.hints import AbsoluteHint, Hint, NeighborHint, RelativeHint, SpecificHint, get_specific_hints
+from picasso.hints_utils import complete_last_available_option
 from picasso.models import Animal, Color, Floor, PicassoTowerFloor
 
 
@@ -84,8 +85,7 @@ def insert_hints(floors: dict[Floor, PicassoTowerFloor], hints: list[SpecificHin
     for hint in hints:
         hint.insert(floors)
 
-    # TODO Add completion of the last color/animal if all others inserted
-    # TODO Add completion of last available color-animal absolute hint
+    complete_last_available_option(floors)
     # TODO Add completion of last available relative hint
 
 

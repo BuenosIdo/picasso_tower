@@ -1,3 +1,4 @@
+from picasso.hints_utils import complete_last_available_absolute_color_animal_hint
 from picasso.models import Animal, Color, Floor, PicassoTowerFloor
 
 
@@ -72,6 +73,7 @@ class ColorAnimalAbsoluteHint(SpecificHint):
                 floor.animal = self.animal
             elif floor.animal == self.animal:
                 floor.color = self.color
+        complete_last_available_absolute_color_animal_hint(floors, self.color, self.animal)
 
 
 class RelativeHint(Hint):

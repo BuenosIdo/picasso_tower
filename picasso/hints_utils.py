@@ -1,13 +1,17 @@
 from picasso.models import Animal, Color, Floor, PicassoTowerFloor
 
 
-def complete_last_available_option(floors: dict[Floor, PicassoTowerFloor]) -> None:
+def complete_last_available_option(tower: dict[Floor, PicassoTowerFloor]) -> None:
+    """
+    In cases where there is only one color or animal left to insert,
+    this function responsible for inserting those color or animal to the left empty floor space.
+    """
     unused_colors = list(Color)
     unused_animals = list(Animal)
     empty_color_floors: list[PicassoTowerFloor] = []
     empty_animal_floors: list[PicassoTowerFloor] = []
 
-    for floor in floors.values():
+    for floor in tower.values():
         if floor.color in unused_colors:
             unused_colors.remove(floor.color)
         if floor.animal in unused_animals:
@@ -24,11 +28,15 @@ def complete_last_available_option(floors: dict[Floor, PicassoTowerFloor]) -> No
 
 
 def complete_last_available_absolute_color_animal_hint(
-    floors: dict[Floor, PicassoTowerFloor], color: Color, animal: Animal
+    tower: dict[Floor, PicassoTowerFloor], color: Color, animal: Animal
 ) -> None:
+    """
+    In cases where there is only one empty floor and an absolute hint was given connecting a color and animal,
+    this function responsible for inserting those color and animal to the last empty floor.
+    """
     empty_floors = []
 
-    for floor in floors.values():
+    for floor in tower.values():
         if floor.color is None and floor.animal is None:
             empty_floors.append(floor)
 

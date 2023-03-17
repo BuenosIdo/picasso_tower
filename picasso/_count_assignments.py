@@ -1,65 +1,25 @@
-from itertools import permutations, product
+from itertools import permutations
 from typing import Generator
 
-from picasso.hints import AbsoluteHint, Hint, NeighborHint, RelativeHint, SpecificHint, get_specific_hints
+from picasso.hints import Hint, SpecificHint, get_specific_hints
 from picasso.hints_utils import complete_last_available_option
 from picasso.models import Animal, Color, Floor, PicassoTowerFloor
 
 
-def generate_all_floor_combinations(floors_number: int) -> Generator[dict[Floor, PicassoTowerFloor], None, None]:
-    """
-    TODO: Improve this
-    """
-    floors: dict[Floor, PicassoTowerFloor] = {
-        Floor(i + 1): PicassoTowerFloor(animal=None, color=None) for i in range(floors_number)
-    }
-    for animal_perm in permutations(Animal, floors_number):
-        for color_perm in permutations(Color, floors_number):
-            for i, floor in enumerate(floors.values()):
-                floor.animal = animal_perm[i]
-                floor.color = color_perm[i]
-            yield floors
-
-
-def generate_all_floor_combinations2(
-    floors: dict[Floor, PicassoTowerFloor],
-    unused_colors: set[Color] | None = None,
-    unused_animals: set[Animal] | None = None,
+def generate_all_floor_combinations(
+    tower: dict[Floor, PicassoTowerFloor]
 ) -> Generator[dict[Floor, PicassoTowerFloor], None, None]:
-    if unused_colors is None:
-        unused_colors = set(Color) - {floor.color for floor in floors.values() if floor.color is not None}
-    if unused_animals is None:
-        unused_animals = set(Animal) - {floor.animal for floor in floors.values() if floor.animal is not None}
-
-    if not unused_animals and not unused_colors:
-        yield floors
-        return
-
-    new_floors = floors.copy()
-    for floor_number, floor in new_floors.items():
-        if floor.color is None or floor.animal is None:
-            floor_possible_color = {floor.color} if floor.color is not None else unused_colors
-            floor_possible_animal = {floor.animal} if floor.animal is not None else unused_animals
-            for color, animal in product(floor_possible_color, floor_possible_animal):
-                new_floors[floor_number] = PicassoTowerFloor(color=color, animal=animal)
-
-                new_unused_colors = unused_colors.copy()
-                new_unused_colors.remove(color)
-                new_unused_animals = unused_animals.copy()
-                new_unused_animals.remove(animal)
-
-                yield from generate_all_floor_combinations2(
-                    floors=new_floors, unused_colors=new_unused_colors, unused_animals=new_unused_animals
-                )
-
-
-def generate_all_floor_combinations3(
-    floors: dict[Floor, PicassoTowerFloor]
-) -> Generator[dict[Floor, PicassoTowerFloor], None, None]:
+    """
+    Generate all possible assignments of the tower.
+    Take in consideration the already existing information in the tower.
+    The logic is to go over all unused colors permutations and for each one go over all unused animals permutations,
+    then go over the tower floors and for each empty space insert the next color/animal
+    according to the current permutations.
+    """
     unused_colors = list(Color)
     unused_animals = list(Animal)
 
-    for floor in floors.values():
+    for floor in tower.values():
         if floor.color in unused_colors:
             unused_colors.remove(floor.color)
         if floor.animal in unused_animals:
@@ -70,8 +30,8 @@ def generate_all_floor_combinations3(
             color_iter = iter(color_perm)
             animal_iter = iter(animal_perm)
             floors_copy = {
-                floor_num: PicassoTowerFloor(animal=floors[floor_num].animal, color=floors[floor_num].color)
-                for floor_num in floors
+                floor_num: PicassoTowerFloor(animal=tower[floor_num].animal, color=tower[floor_num].color)
+                for floor_num in tower
             }
             for floor in floors_copy.values():
                 if floor.color is None:
@@ -81,26 +41,28 @@ def generate_all_floor_combinations3(
             yield floors_copy
 
 
-def insert_hints(floors: dict[Floor, PicassoTowerFloor], hints: list[SpecificHint]) -> None:
+def insert_hints(tower: dict[Floor, PicassoTowerFloor], hints: list[SpecificHint]) -> None:
+    """
+    Responsible for inserting color and animal to the floors according to the hints.
+    """
     for hint in hints:
-        hint.insert(floors)
+        hint.insert(tower)
 
-    complete_last_available_option(floors)
+    complete_last_available_option(tower)
     # TODO Add completion of last available relative hint
 
 
 def count_assignments(hints: list[Hint]) -> int:
     """
-    Given a list of Hint objects, return the number of
-    valid assignments that satisfy these hints.
+    Given a list of Hint objects, return the number of valid assignments that satisfy these hints.
     """
     counter = 0
     specific_hints = get_specific_hints(hints)
-    floors: dict[Floor, PicassoTowerFloor] = {
+    tower: dict[Floor, PicassoTowerFloor] = {
         Floor(i + 1): PicassoTowerFloor(animal=None, color=None) for i in range(5)
     }
-    insert_hints(floors, specific_hints)
-    for floors_combination in generate_all_floor_combinations3(floors=floors):
+    insert_hints(tower, specific_hints)
+    for floors_combination in generate_all_floor_combinations(tower=tower):
         for specific_hint in specific_hints:
             if not specific_hint.validate(floors_combination):
                 break

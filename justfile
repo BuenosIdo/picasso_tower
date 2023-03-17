@@ -17,9 +17,12 @@ install_project:
 setup: apt-installations create-venv install_project
 
 format:
-  isort --line-length 120 .
-  black --line-length 120 .
+  isort --line-length 120 picasso test
+  black --line-length 120 picasso test
 
 lint:
-  flake8 picasso
-  mypy picasso
+  flake8 picasso test
+  mypy picasso test
+
+test:
+  pytest

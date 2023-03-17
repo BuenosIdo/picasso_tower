@@ -1,4 +1,4 @@
-from picasso.models import Floor, Color, Animal, PicassoTowerFloor
+from picasso.models import Animal, Color, Floor, PicassoTowerFloor
 
 
 class Hint(object):

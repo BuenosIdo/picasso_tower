@@ -1,7 +1,8 @@
-from typing import Generator
 from itertools import permutations, product
-from picasso.models import Floor, Color, Animal, PicassoTowerFloor
-from picasso.hints import Hint, AbsoluteHint, RelativeHint, NeighborHint, get_specific_hints, SpecificHint
+from typing import Generator
+
+from picasso.hints import AbsoluteHint, Hint, NeighborHint, RelativeHint, SpecificHint, get_specific_hints
+from picasso.models import Animal, Color, Floor, PicassoTowerFloor
 
 
 def generate_all_floor_combinations(floors_number: int) -> Generator[dict[Floor, PicassoTowerFloor], None, None]:

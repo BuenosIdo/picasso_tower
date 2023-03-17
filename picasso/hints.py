@@ -345,7 +345,11 @@ class ColorColorNeighborHint(SpecificHint):
         for floor in Floor:
             if tower[floor].color in [self.color1, self.color2]:
                 color_to_insert = self.color1 if tower[floor].color == self.color2 else self.color2
-                if floor < Floor.Fifth and floor < Floor.Fifth and tower[Floor(floor + 1)].color not in [color_to_insert, None]:
+                if (
+                    floor < Floor.Fifth
+                    and floor < Floor.Fifth
+                    and tower[Floor(floor + 1)].color not in [color_to_insert, None]
+                ):
                     tower[Floor(floor - 1)].color = color_to_insert
                 elif floor > Floor.First and tower[Floor(floor - 1)].color not in [color_to_insert, None]:
                     tower[Floor(floor + 1)].color = color_to_insert
@@ -417,9 +421,7 @@ class AnimalAnimalNeighborHint(SpecificHint):
     def insert(self, tower: dict[Floor, PicassoTowerFloor]) -> None:
         for floor in Floor:
             if tower[floor].animal in [self.animal1, self.animal2]:
-                animal_to_insert = (
-                    self.animal1 if tower[floor].animal == self.animal2 else self.animal2
-                )
+                animal_to_insert = self.animal1 if tower[floor].animal == self.animal2 else self.animal2
                 if floor < Floor.Fifth and tower[Floor(floor + 1)].animal not in [animal_to_insert, None]:
                     tower[Floor(floor - 1)].animal = animal_to_insert
                 elif floor > Floor.First and tower[Floor(floor - 1)].animal not in [animal_to_insert, None]:

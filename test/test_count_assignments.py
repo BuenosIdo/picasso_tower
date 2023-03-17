@@ -58,6 +58,26 @@ TEST_FULL_COLOR_HINTS = [
     AbsoluteHint(Color.Blue, Floor.Fifth),
 ]
 
+TEST_ALL_RELATIVE_HINT_KINDS = [
+    AbsoluteHint(Color.Orange, Floor.First),
+    RelativeHint(Color.Orange, Color.Blue, -1),
+    RelativeHint(Color.Blue, Animal.Grasshopper, -1),
+    RelativeHint(Animal.Grasshopper, Animal.Chicken, 1),
+    RelativeHint(Animal.Chicken, Color.Red, -3),
+]
+
+TEST_ALL_NEIGHBOR_HINT_KINDS = [
+    AbsoluteHint(Color.Red, Floor.First),
+    AbsoluteHint(Color.Yellow, Floor.Fifth),
+    AbsoluteHint(Animal.Rabbit, Floor.Fifth),
+    NeighborHint(Floor.First, Color.Green),
+    NeighborHint(Floor.Fifth, Animal.Grasshopper),
+    NeighborHint(Color.Red, Color.Green),
+    NeighborHint(Color.Yellow, Animal.Grasshopper),
+    NeighborHint(Animal.Bird, Animal.Grasshopper),
+    NeighborHint(Animal.Rabbit, Color.Blue),
+]
+
 
 @pytest.mark.parametrize(
     "hints,expected_count",
@@ -69,7 +89,9 @@ TEST_FULL_COLOR_HINTS = [
         (TEST_OVERLAPPING_HINTS_RESULT_IN_ZERO_POSSIBLE_ASSIGNMENTS, 0),
         (TEST_FULL_TOWER_RESULT_IN_ONE_POSSIBLE_ASSIGNMENT, 1),
         (TEST_FULL_ANIMAL_HINTS, 120),
-        (TEST_FULL_COLOR_HINTS, 120)
+        (TEST_FULL_COLOR_HINTS, 120),
+        (TEST_ALL_RELATIVE_HINT_KINDS, 12),
+        (TEST_ALL_NEIGHBOR_HINT_KINDS, 2)
     ],
 )
 def test_count_assignments(hints: list[Hint], expected_count: int) -> None:

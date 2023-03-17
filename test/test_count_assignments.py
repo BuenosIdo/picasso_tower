@@ -42,6 +42,23 @@ TEST_FULL_TOWER_RESULT_IN_ONE_POSSIBLE_ASSIGNMENT = [
 ]
 
 
+TEST_FULL_ANIMAL_HINTS = [
+    AbsoluteHint(Animal.Rabbit, Floor.First),
+    AbsoluteHint(Animal.Chicken, Floor.Second),
+    AbsoluteHint(Floor.Third, Animal.Grasshopper),
+    AbsoluteHint(Floor.Fourth, Animal.Bird),
+    AbsoluteHint(Animal.Frog, Floor.Fifth),
+]
+
+TEST_FULL_COLOR_HINTS = [
+    AbsoluteHint(Color.Red, Floor.First),
+    AbsoluteHint(Color.Yellow, Floor.Second),
+    AbsoluteHint(Floor.Third, Color.Green),
+    AbsoluteHint(Floor.Fourth, Color.Orange),
+    AbsoluteHint(Color.Blue, Floor.Fifth),
+]
+
+
 @pytest.mark.parametrize(
     "hints,expected_count",
     [
@@ -51,6 +68,8 @@ TEST_FULL_TOWER_RESULT_IN_ONE_POSSIBLE_ASSIGNMENT = [
         (TEST_NO_HINTS_RESULT_IN_ALL_ASSIGNMENTS_POSSIBLE, 14400),
         (TEST_OVERLAPPING_HINTS_RESULT_IN_ZERO_POSSIBLE_ASSIGNMENTS, 0),
         (TEST_FULL_TOWER_RESULT_IN_ONE_POSSIBLE_ASSIGNMENT, 1),
+        (TEST_FULL_ANIMAL_HINTS, 120),
+        (TEST_FULL_COLOR_HINTS, 120)
     ],
 )
 def test_count_assignments(hints: list[Hint], expected_count: int) -> None:

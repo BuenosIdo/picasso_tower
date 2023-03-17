@@ -11,16 +11,10 @@ apt-installations:
 create-venv:
   {{python_executable}} -m venv venv
 
-pip-installations:
-  {{venv_executable}} -m pip install isort
-  {{venv_executable}} -m pip install black
-  {{venv_executable}} -m pip install flake8
-  {{venv_executable}} -m pip install mypy
-
 install_project:
-  {{venv_executable}} -m pip install -e .
+  {{venv_executable}} -m pip install -e .[dev]
 
-setup: apt-installations create-venv pip-installations install_project
+setup: apt-installations create-venv install_project
 
 format:
   isort --line-length 120 .

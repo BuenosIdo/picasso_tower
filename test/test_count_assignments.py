@@ -91,7 +91,7 @@ TEST_ALL_NEIGHBOR_HINT_KINDS = [
         (TEST_FULL_ANIMAL_HINTS, 120),
         (TEST_FULL_COLOR_HINTS, 120),
         (TEST_ALL_RELATIVE_HINT_KINDS, 12),
-        (TEST_ALL_NEIGHBOR_HINT_KINDS, 2)
+        (TEST_ALL_NEIGHBOR_HINT_KINDS, 2),
     ],
 )
 def test_count_assignments(hints: list[Hint], expected_count: int) -> None:

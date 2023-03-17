@@ -342,18 +342,13 @@ class ColorColorNeighborHint(SpecificHint):
         return False
 
     def insert(self, tower: dict[Floor, PicassoTowerFloor]) -> None:
-        if tower[Floor.First].color in [self.color1, self.color2]:
-            tower[Floor.Second].color = self.color1 if tower[Floor.First].color == self.color2 else self.color2
-        elif tower[Floor.Fifth].color in [self.color1, self.color2]:
-            tower[Floor.Fourth].color = self.color1 if tower[Floor.Fifth].color == self.color2 else self.color2
-        else:
-            for floor_number in range(Floor.Second, Floor.Fifth):
-                if tower[Floor(floor_number)].color in [self.color1, self.color2]:
-                    color_to_insert = self.color1 if tower[Floor(floor_number)].color == self.color2 else self.color2
-                    if tower[Floor(floor_number + 1)].color not in [color_to_insert, None]:
-                        tower[Floor(floor_number - 1)].color = color_to_insert
-                    elif tower[Floor(floor_number - 1)].color not in [color_to_insert, None]:
-                        tower[Floor(floor_number + 1)].color = color_to_insert
+        for floor in Floor:
+            if tower[floor].color in [self.color1, self.color2]:
+                color_to_insert = self.color1 if tower[floor].color == self.color2 else self.color2
+                if floor < Floor.Fifth and floor < Floor.Fifth and tower[Floor(floor + 1)].color not in [color_to_insert, None]:
+                    tower[Floor(floor - 1)].color = color_to_insert
+                elif floor > Floor.First and tower[Floor(floor - 1)].color not in [color_to_insert, None]:
+                    tower[Floor(floor + 1)].color = color_to_insert
 
 
 class ColorAnimalNeighborHint(SpecificHint):
@@ -382,28 +377,17 @@ class ColorAnimalNeighborHint(SpecificHint):
         return False
 
     def insert(self, tower: dict[Floor, PicassoTowerFloor]) -> None:
-        if tower[Floor.First].color == self.color:
-            tower[Floor.Second].animal = self.animal
-        elif tower[Floor.First].animal == self.animal:
-            tower[Floor.Second].color = self.color
-
-        elif tower[Floor.Fifth].color == self.color:
-            tower[Floor.Fourth].animal = self.animal
-        elif tower[Floor.Fifth].animal == self.animal:
-            tower[Floor.Fourth].color = self.color
-
-        else:
-            for floor_number in range(Floor.Second, Floor.Fifth):
-                if tower[Floor(floor_number)].color == self.color:
-                    if tower[Floor(floor_number + 1)].animal not in [self.animal, None]:
-                        tower[Floor(floor_number - 1)].animal = self.animal
-                    elif tower[Floor(floor_number - 1)].animal not in [self.animal, None]:
-                        tower[Floor(floor_number + 1)].animal = self.animal
-                elif tower[Floor(floor_number)].animal == self.animal:
-                    if tower[Floor(floor_number + 1)].color not in [self.color, None]:
-                        tower[Floor(floor_number - 1)].color = self.color
-                    elif tower[Floor(floor_number - 1)].color not in [self.color, None]:
-                        tower[Floor(floor_number + 1)].color = self.color
+        for floor in Floor:
+            if tower[floor].color == self.color:
+                if floor < Floor.Fifth and tower[Floor(floor + 1)].animal not in [self.animal, None]:
+                    tower[Floor(floor - 1)].animal = self.animal
+                elif floor > Floor.First and tower[Floor(floor - 1)].animal not in [self.animal, None]:
+                    tower[Floor(floor + 1)].animal = self.animal
+            elif tower[floor].animal == self.animal:
+                if floor < Floor.Fifth and tower[Floor(floor + 1)].color not in [self.color, None]:
+                    tower[Floor(floor - 1)].color = self.color
+                elif floor > Floor.First and tower[Floor(floor - 1)].color not in [self.color, None]:
+                    tower[Floor(floor + 1)].color = self.color
 
 
 class AnimalAnimalNeighborHint(SpecificHint):
@@ -431,20 +415,15 @@ class AnimalAnimalNeighborHint(SpecificHint):
         return False
 
     def insert(self, tower: dict[Floor, PicassoTowerFloor]) -> None:
-        if tower[Floor.First].animal in [self.animal1, self.animal2]:
-            tower[Floor.Second].animal = self.animal1 if tower[Floor.First].animal == self.animal2 else self.animal2
-        elif tower[Floor.Fifth].animal in [self.animal1, self.animal2]:
-            tower[Floor.Fourth].animal = self.animal1 if tower[Floor.Fifth].animal == self.animal2 else self.animal2
-        else:
-            for floor_number in range(Floor.Second, Floor.Fifth):
-                if tower[Floor(floor_number)].animal in [self.animal1, self.animal2]:
-                    animal_to_insert = (
-                        self.animal1 if tower[Floor(floor_number)].animal == self.animal2 else self.animal2
-                    )
-                    if tower[Floor(floor_number + 1)].animal not in [animal_to_insert, None]:
-                        tower[Floor(floor_number - 1)].animal = animal_to_insert
-                    elif tower[Floor(floor_number - 1)].animal not in [animal_to_insert, None]:
-                        tower[Floor(floor_number + 1)].animal = animal_to_insert
+        for floor in Floor:
+            if tower[floor].animal in [self.animal1, self.animal2]:
+                animal_to_insert = (
+                    self.animal1 if tower[floor].animal == self.animal2 else self.animal2
+                )
+                if floor < Floor.Fifth and tower[Floor(floor + 1)].animal not in [animal_to_insert, None]:
+                    tower[Floor(floor - 1)].animal = animal_to_insert
+                elif floor > Floor.First and tower[Floor(floor - 1)].animal not in [animal_to_insert, None]:
+                    tower[Floor(floor + 1)].animal = animal_to_insert
 
 
 def get_specific_absolute_hint(hint: AbsoluteHint) -> SpecificHint:

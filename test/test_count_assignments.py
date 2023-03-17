@@ -79,6 +79,7 @@ TEST_ALL_NEIGHBOR_HINT_KINDS = [
     AbsoluteHint(Animal.Rabbit, Floor.Fifth),
     NeighborHint(Floor.First, Color.Green),
     NeighborHint(Floor.Fifth, Animal.Grasshopper),
+    NeighborHint(Floor.Third, Animal.Grasshopper),
     NeighborHint(Color.Red, Color.Green),
     NeighborHint(Color.Yellow, Animal.Grasshopper),
     NeighborHint(Animal.Bird, Animal.Grasshopper),
